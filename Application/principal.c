@@ -10,6 +10,7 @@ uint32_t *stack1 = (uint32_t *) STACK_1_ADDRESS;
 uint32_t *stack2 = (uint32_t *) STACK_2_ADDRESS;
 
 char current_process = 0;
+
 char setup = 0;
 
  void SysTick_Handler(void) {
