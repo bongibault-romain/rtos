@@ -9,21 +9,21 @@
 uint32_t *stack1 = (uint32_t *) STACK_1_ADDRESS;
 uint32_t *stack2 = (uint32_t *) STACK_2_ADDRESS;
 
+uint32_t schedule[40] = {0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0};
+uint32_t time = 0;
+uint32_t current_process = 0;
+
 #include <stdio.h>
 
-char current_process = 0;
-
-//char setup = 0;
-
- void SysTick_Handler(void) {
-//	if (!setup){
-//		__set_PSP((uint32_t)stack1);
-//		setup = 1;
-//		SCB->ICSR |= SCB_ICSR_PENDSVSET ;
-//		return;
-//	}
+void SysTick_Handler(void) {
+	 time = (time + 1) % 40;
+	current_process = schedule[time];
+		 
+	 if (schedule[time-1] == schedule[time]) {
+		 return;
+	 }
 	
-	if(current_process){
+	if(!schedule[time]){
 		stack2 = (uint32_t *) __get_PSP();
 		__set_PSP((uint32_t)stack1);
 	} else {
@@ -31,7 +31,6 @@ char current_process = 0;
 		__set_PSP((uint32_t)stack2);
 	}
 	
-	current_process = !current_process;
 	SCB->ICSR |= SCB_ICSR_PENDSVSET ;
 	return;
 }
@@ -77,7 +76,7 @@ void initialize_stacks() {
 int main ( void )
 {
 	SysTick->CTRL |= SysTick_CTRL_ENABLE + SysTick_CTRL_TICKINT + SysTick_CTRL_CLKSOURCE;
-	SysTick->LOAD |= 72000;
+	SysTick->LOAD |= (72000*2);
 	
 	NVIC_SetPriority(SysTick_IRQn, 0x0);
 	NVIC_SetPriority(PendSV_IRQn, 0x3);
