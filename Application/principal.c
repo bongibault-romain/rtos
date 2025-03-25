@@ -19,7 +19,7 @@ void SysTick_Handler(void) {
 	 time = (time + 1) % 40;
 	current_process = schedule[time];
 		 
-	 if (schedule[time-1] == schedule[time]) {
+	 if (!time || schedule[time-1] == schedule[time]) {
 		 return;
 	 }
 	
